@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Serie · tu bitácora de gimnasio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e7e9ec">
+<meta name="description" content="Rutinas, horario, cronómetro y registro de series para el gimnasio. Funciona sin internet.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Serie">
+<script>
+/* Aplica el tema antes de pintar, para evitar el parpadeo */
+(function () {
+  var t = 'system';
+  try { var o = JSON.parse(localStorage.getItem('serie.v1') || '{}'); if (o.settings && o.settings.theme) t = o.settings.theme; } catch (e) {}
+  var dark = t === 'dark' || (t === 'system' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+})();
+</script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+  <header id="top" class="top">
+    <h1 id="page-title">Serie</h1>
+    <button id="chip" class="chip-timer" data-act="open-timer" data-tab="sw" aria-label="Cronómetro y descanso"></button>
+  </header>
+  <main id="main" tabindex="-1"></main>
+  <nav id="nav" class="nav" aria-label="Secciones"></nav>
+</div>
+<div id="layer"></div>
+<div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+<noscript>Esta app necesita JavaScript.</noscript>
+<script src="js/figures.js"></script>
+<script src="js/data.js"></script>
+<script src="js/core.js"></script>
+<script src="js/logic.js"></script>
+<script src="js/v-home.js"></script>
+<script src="js/v-routines.js"></script>
+<script src="js/v-schedule.js"></script>
+<script src="js/v-workout.js"></script>
+<script src="js/v-progress.js"></script>
+<script src="js/v-more.js"></script>
+<script src="js/v-profile.js"></script>
+<script src="js/logros.js"></script>
+<script src="js/native.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

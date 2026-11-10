@@ -1,0 +1,69 @@
+# Compila el APK de Serie en los servidores de GitHub (no hace falta Android Studio).
+# Se ejecuta solo al subir cambios, o a mano desde la pestaña Actions > "Compilar APK" > Run workflow.
+name: Compilar APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Instalar Capacitor
+        run: npm install
+
+      - name: Copiar la app a www
+        run: |
+          rm -rf www && mkdir www
+          cp -r index.html manifest.webmanifest styles.css js icons gifs www/
+          # sin sw.js: dentro del APK la app ya va guardada, no necesita service worker
+
+      - name: Crear el proyecto Android
+        run: npx cap add android
+
+      - name: Icono y pantalla de arranque de Serie
+        continue-on-error: true
+        run: |
+          cp -r android-res/mipmap-* android/app/src/main/res/
+          cp android-res/values/ic_launcher_background.xml android/app/src/main/res/values/
+          find android/app/src/main/res -name 'splash.png' -exec cp android-res/splash.png {} \;
+
+      - name: Avisos con la app cerrada (permisos e icono)
+        run: |
+          python3 android-res/patch_manifest.py android/app/src/main/AndroidManifest.xml
+          cp -r android-res/drawable-* android/app/src/main/res/
+
+      - name: Sincronizar
+        run: npx cap sync android
+
+      - name: Usar siempre la misma firma
+        continue-on-error: true
+        run: |
+          # Con la misma firma, cada APK nuevo se instala encima del anterior sin perder tus datos.
+          mkdir -p ~/.android
+          cp android-res/debug.keystore ~/.android/debug.keystore
+
+      - name: Compilar (debug)
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Subir el APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: serie-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error

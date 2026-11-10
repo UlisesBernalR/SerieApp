@@ -1,0 +1,18 @@
+{
+  "appId": "app.serie.gym",
+  "appName": "Serie",
+  "webDir": "www",
+  "backgroundColor": "#e7e9ec",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "css"
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_serie",
+      "iconColor": "#C8102E"
+    }
+  }
+}
